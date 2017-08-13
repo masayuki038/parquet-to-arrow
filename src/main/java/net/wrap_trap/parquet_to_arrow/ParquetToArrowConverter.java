@@ -39,7 +39,7 @@ import java.util.List;
 
 public class ParquetToArrowConverter {
 
-    protected static VectorSchemaRoot convertToArrow(String parquetFilePath) throws IOException {
+    public VectorSchemaRoot convertToArrow(String parquetFilePath) throws IOException {
         Configuration conf = new Configuration();
         Path inPath = new Path(parquetFilePath);
 
@@ -49,7 +49,7 @@ public class ParquetToArrowConverter {
         return convertToArrow(conf, metaData, schema, inPath);
     }
 
-    protected static VectorSchemaRoot convertToArrow(Configuration conf, ParquetMetadata metaData, MessageType schema, Path inPath) throws IOException {
+    protected VectorSchemaRoot convertToArrow(Configuration conf, ParquetMetadata metaData, MessageType schema, Path inPath) throws IOException {
         List<ColumnDescriptor> columns = schema.getColumns();
 
         BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
