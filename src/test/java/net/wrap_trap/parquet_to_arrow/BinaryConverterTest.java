@@ -28,32 +28,35 @@ import org.apache.parquet.column.ColumnDescriptor;
 import org.apache.parquet.hadoop.ParquetFileReader;
 import org.apache.parquet.hadoop.metadata.ParquetMetadata;
 import org.apache.parquet.schema.MessageType;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class BinaryConverterTest {
-    @Test
-    public void nameTest() throws IOException {
-        String[] expectations = new String[]{"ALGERIA","ARGENTINA","BRAZIL","CANADA","EGYPT","ETHIOPIA","FRANCE","GERMANY","INDIA","INDONESIA","IRAN","IRAQ","JAPAN","JORDAN","KENYA","MOROCCO","MOZAMBIQUE","PERU","CHINA","ROMANIA","SAUDI ARABIA","VIETNAM","RUSSIA","UNITED KINGDOM","UNITED STATES"};
+public class BinaryConverterTest extends ConverterTest {
 
+    @Test
+    public void binaryConverterTest() throws IOException {
         Configuration conf = new Configuration();
-        Path inPath = new Path("src/test/resources/nationsSF.parquet");
+        Path inPath = new Path(TEST_FILE);
         ParquetMetadata metaData = ParquetFileReader.readFooter(conf, inPath);
         MessageType schema = metaData.getFileMetaData().getSchema();
         List<ColumnDescriptor> columns = schema.getColumns();
-        ColumnDescriptor column = columns.get(1);
+        ColumnDescriptor column = columns.get(TestParquetFileGenerator.BINARY_FIELD_INDEX);
         BinaryConverter converter = new BinaryConverter(conf, metaData, schema, inPath, column);
         BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
         FieldVector vector = converter.convert(allocator);
 
         ValueVector.Accessor accessor = vector.getAccessor();
+        assertThat(accessor.getValueCount(), is(5));
         for (int i = 0; i < accessor.getValueCount(); i++) {
-            assertThat(accessor.getObject(i).toString(), is(expectations[i]));
+            assertThat(accessor.getObject(i).toString(), is("foobar" + i));
         }
     }
 }

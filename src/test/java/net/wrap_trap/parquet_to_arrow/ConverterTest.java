@@ -18,19 +18,24 @@
  */
 package net.wrap_trap.parquet_to_arrow;
 
-import org.apache.arrow.vector.VectorSchemaRoot;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+
 import java.io.IOException;
+import java.text.ParseException;
 
-import org.junit.Test;
+public abstract class ConverterTest {
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+    protected static String TEST_FILE = "src/test/resources/test.parquet";
 
-public class ParquetToArrowConverterTest extends ConverterTest {
-    @Test
-    public void parquetToArrowConverterTest() throws IOException {
-        ParquetToArrowConverter converter = new ParquetToArrowConverter();
-        VectorSchemaRoot vectorSchemaRoot = converter.convertToArrow(TEST_FILE);
-        assertThat(vectorSchemaRoot.getRowCount(), is(5));
+    @BeforeClass
+    public static void setUp() throws IOException, ParseException {
+        //System.setProperty("hadoop.home.dir", "d:/development/hadoop");
+        TestParquetFileGenerator.generateParquetFile(TEST_FILE);
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        TestParquetFileGenerator.clear(TEST_FILE);
     }
 }

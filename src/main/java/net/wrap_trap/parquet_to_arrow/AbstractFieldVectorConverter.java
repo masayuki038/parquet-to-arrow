@@ -53,27 +53,28 @@ public abstract class AbstractFieldVectorConverter implements FieldVectorConvert
     abstract protected void setValueCount(int index);
 
     public FieldVector convert(BufferAllocator allocator) throws IOException {
-        ParquetFileReader reader =  new ParquetFileReader(conf, inPath, metaData.getBlocks(), schema.getColumns());
-        FieldVector vector = createFieldVector(column.getPath()[0], allocator);
+        try(ParquetFileReader reader =  new ParquetFileReader(conf, inPath, metaData.getBlocks(), schema.getColumns())) {
+            FieldVector vector = createFieldVector(column.getPath()[0], allocator);
 
-        int index = 0;
-        PageReadStore store = reader.readNextRowGroup();
-        while (store != null) {
-            ColumnReadStoreImpl columnReadStoreImpl = new ColumnReadStoreImpl(store, new ParquetGroupConverter(), schema, "");
-            int maxDefinitionLevel = column.getMaxDefinitionLevel();
-            if (maxDefinitionLevel > 0) {
-                throw new UnsupportedOperationException("Only support definition level == 0");
-            }
+            int index = 0;
+            PageReadStore store = reader.readNextRowGroup();
+            while (store != null) {
+                ColumnReadStoreImpl columnReadStoreImpl = new ColumnReadStoreImpl(store, new ParquetGroupConverter(), schema, "");
+                int maxDefinitionLevel = column.getMaxDefinitionLevel();
+                if (maxDefinitionLevel > 0) {
+                    throw new UnsupportedOperationException("Only support definition level == 0");
+                }
 
-            ColumnReader columnReader = columnReadStoreImpl.getColumnReader(column);
-            long e = columnReader.getTotalValueCount();
-            for (long i = 0L; i < e; i++) {
-                setValue(index++, columnReader);
-                columnReader.consume();
+                ColumnReader columnReader = columnReadStoreImpl.getColumnReader(column);
+                long e = columnReader.getTotalValueCount();
+                for (long i = 0L; i < e; i++) {
+                    setValue(index++, columnReader);
+                    columnReader.consume();
+                }
+                store = reader.readNextRowGroup();
             }
-            store = reader.readNextRowGroup();
+            setValueCount(index);
+            return vector;
         }
-        setValueCount(index);
-        return vector;
     }
 }

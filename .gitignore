@@ -1,3 +1,5 @@
 *.iml
 .idea/*
 target/*
+test.parquet
+.test.parquet.crc
