@@ -36,7 +36,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class StringConverterTest {
+public class BinaryConverterTest {
     @Test
     public void nameTest() throws IOException {
         String[] expectations = new String[]{"ALGERIA","ARGENTINA","BRAZIL","CANADA","EGYPT","ETHIOPIA","FRANCE","GERMANY","INDIA","INDONESIA","IRAN","IRAQ","JAPAN","JORDAN","KENYA","MOROCCO","MOZAMBIQUE","PERU","CHINA","ROMANIA","SAUDI ARABIA","VIETNAM","RUSSIA","UNITED KINGDOM","UNITED STATES"};
@@ -47,7 +47,7 @@ public class StringConverterTest {
         MessageType schema = metaData.getFileMetaData().getSchema();
         List<ColumnDescriptor> columns = schema.getColumns();
         ColumnDescriptor column = columns.get(1);
-        StringConverter converter = new StringConverter(conf, metaData, schema, inPath, column);
+        BinaryConverter converter = new BinaryConverter(conf, metaData, schema, inPath, column);
         BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
         FieldVector vector = converter.convert(allocator);
 

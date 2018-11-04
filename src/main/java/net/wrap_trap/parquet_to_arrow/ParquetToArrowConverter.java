@@ -66,7 +66,7 @@ public class ParquetToArrowConverter {
                     fieldVectorList.add(new Int64Converter(conf, metaData, schema, inPath, column).convert(allocator));
                     break;
                 case BINARY:
-                    fieldVectorList.add(new StringConverter(conf, metaData, schema, inPath, column).convert(allocator));
+                    fieldVectorList.add(new BinaryConverter(conf, metaData, schema, inPath, column).convert(allocator));
                     break;
                 default:
                     throw new IllegalArgumentException("Unexpected type: " + typeName);

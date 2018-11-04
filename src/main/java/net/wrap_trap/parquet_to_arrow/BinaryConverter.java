@@ -28,10 +28,10 @@ import org.apache.parquet.column.ColumnReader;
 import org.apache.parquet.hadoop.metadata.ParquetMetadata;
 import org.apache.parquet.schema.MessageType;
 
-public class StringConverter extends AbstractFieldVectorConverter {
+public class BinaryConverter extends AbstractFieldVectorConverter {
     private NullableVarCharVector.Mutator mutator;
 
-    public StringConverter(Configuration conf, ParquetMetadata metaData, MessageType schema, Path inPath, ColumnDescriptor column) {
+    public BinaryConverter(Configuration conf, ParquetMetadata metaData, MessageType schema, Path inPath, ColumnDescriptor column) {
         super(conf, metaData, schema, inPath, column);
     }
 
