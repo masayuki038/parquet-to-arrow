@@ -42,7 +42,7 @@ public class StringConverterTest {
         String[] expectations = new String[]{"ALGERIA","ARGENTINA","BRAZIL","CANADA","EGYPT","ETHIOPIA","FRANCE","GERMANY","INDIA","INDONESIA","IRAN","IRAQ","JAPAN","JORDAN","KENYA","MOROCCO","MOZAMBIQUE","PERU","CHINA","ROMANIA","SAUDI ARABIA","VIETNAM","RUSSIA","UNITED KINGDOM","UNITED STATES"};
 
         Configuration conf = new Configuration();
-        Path inPath = new Path("D:\\development\\repository\\git\\drill\\sample-data\\nationsSF\\nationsSF.parquet");
+        Path inPath = new Path("src/test/resources/nationsSF.parquet");
         ParquetMetadata metaData = ParquetFileReader.readFooter(conf, inPath);
         MessageType schema = metaData.getFileMetaData().getSchema();
         List<ColumnDescriptor> columns = schema.getColumns();

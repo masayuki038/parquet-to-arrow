@@ -30,7 +30,7 @@ public class ParquetToArrowConverterTest {
     @Test
     public void parquetToArrowConverterTest() throws IOException {
         ParquetToArrowConverter converter = new ParquetToArrowConverter();
-        VectorSchemaRoot vectorSchemaRoot = converter.convertToArrow("D:\\development\\repository\\git\\drill\\sample-data\\nationsSF\\nationsSF.parquet");
+        VectorSchemaRoot vectorSchemaRoot = converter.convertToArrow("src/test/resources/nationsSF.parquet");
         assertThat(vectorSchemaRoot.getRowCount(), is(25));
     }
 }
