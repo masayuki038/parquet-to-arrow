@@ -25,7 +25,6 @@ import org.apache.arrow.vector.ValueVector;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.column.ColumnDescriptor;
-import org.apache.parquet.hadoop.ParquetFileReader;
 import org.apache.parquet.hadoop.metadata.ParquetMetadata;
 import org.apache.parquet.schema.MessageType;
 
@@ -39,13 +38,7 @@ import java.util.List;
 public class Int64ConverterTest extends ConverterTest {
     @Test
     public void int64ConverterTest() throws IOException {
-        Configuration conf = new Configuration();
-        Path inPath = new Path(TEST_FILE);
-        ParquetMetadata metaData = ParquetFileReader.readFooter(conf, inPath);
-        MessageType schema = metaData.getFileMetaData().getSchema();
-        List<ColumnDescriptor> columns = schema.getColumns();
-        ColumnDescriptor column = columns.get(TestParquetFileGenerator.INT64_FIELD_INDEX);
-        Int64Converter converter = new Int64Converter(conf, metaData, schema, inPath, column);
+        FieldVectorConverter converter = build(TEST_FILE);
         BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
         FieldVector vector = converter.convert(allocator);
 
@@ -54,5 +47,11 @@ public class Int64ConverterTest extends ConverterTest {
         for (int i = 0; i < accessor.getValueCount(); i++) {
             assertThat(accessor.getObject(i), is(64L + i));
         }
+    }
+
+    @Override
+    public FieldVectorConverter createConverter(Configuration conf, Path inPath, ParquetMetadata metaData, MessageType schema,  List<ColumnDescriptor> columns) {
+        ColumnDescriptor column = columns.get(TestParquetFileGenerator.INT64_FIELD_INDEX);
+        return new Int64Converter(conf, metaData, schema, inPath, column);
     }
 }

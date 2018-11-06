@@ -25,24 +25,19 @@ import org.apache.arrow.vector.ValueVector;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.column.ColumnDescriptor;
-import org.apache.parquet.hadoop.ParquetFileReader;
 import org.apache.parquet.hadoop.metadata.ParquetMetadata;
 import org.apache.parquet.schema.MessageType;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class BinaryConverterTest extends ConverterTest {
-
+public class Int32ConverterTest extends ConverterTest {
     @Test
-    public void binaryConverterTest() throws IOException {
+    public void int32ConverterTest() throws IOException {
         FieldVectorConverter converter = build(TEST_FILE);
         BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
         FieldVector vector = converter.convert(allocator);
@@ -50,13 +45,13 @@ public class BinaryConverterTest extends ConverterTest {
         ValueVector.Accessor accessor = vector.getAccessor();
         assertThat(accessor.getValueCount(), is(5));
         for (int i = 0; i < accessor.getValueCount(); i++) {
-            assertThat(accessor.getObject(i).toString(), is("foobar" + i));
+            assertThat(accessor.getObject(i), is(32 + i));
         }
     }
 
     @Override
-    public FieldVectorConverter createConverter(Configuration conf, Path inPath, ParquetMetadata metaData, MessageType schema,  List<ColumnDescriptor> columns) {
-        ColumnDescriptor column = columns.get(TestParquetFileGenerator.BINARY_FIELD_INDEX);
-        return new BinaryConverter(conf, metaData, schema, inPath, column);
+    public FieldVectorConverter createConverter(Configuration conf, Path inPath, ParquetMetadata metaData, MessageType schema, List<ColumnDescriptor> columns) {
+        ColumnDescriptor column = columns.get(TestParquetFileGenerator.INT32_FIELD_INDEX);
+        return new Int32Converter(conf, metaData, schema, inPath, column);
     }
 }
