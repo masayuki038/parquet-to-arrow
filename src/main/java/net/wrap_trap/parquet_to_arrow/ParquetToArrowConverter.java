@@ -20,6 +20,7 @@ package net.wrap_trap.parquet_to_arrow;
 
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.vector.IntVector;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.column.ColumnDescriptor;
@@ -74,6 +75,6 @@ public class ParquetToArrowConverter {
         }
 
         SchemaMapping schemaMapping = new SchemaConverter().fromParquet(schema);
-        return new VectorSchemaRoot(schemaMapping.getArrowSchema(), fieldVectorList, fieldVectorList.get(0).getAccessor().getValueCount());
+        return new VectorSchemaRoot(schemaMapping.getArrowSchema(), fieldVectorList, fieldVectorList.get(0).getValueCount());
     }
 }

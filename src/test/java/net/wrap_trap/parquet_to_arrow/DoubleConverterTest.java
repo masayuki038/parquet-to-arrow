@@ -27,30 +27,30 @@ import org.apache.hadoop.fs.Path;
 import org.apache.parquet.column.ColumnDescriptor;
 import org.apache.parquet.hadoop.metadata.ParquetMetadata;
 import org.apache.parquet.schema.MessageType;
-
 import org.junit.Test;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.util.List;
 
-public class Int64ConverterTest extends ConverterTest {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public class DoubleConverterTest extends ConverterTest {
     @Test
-    public void int64ConverterTest() throws IOException {
+    public void doubleConverterTest() throws IOException {
         FieldVectorConverter converter = build(TEST_FILE);
         BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
         FieldVector vector = converter.convert(allocator);
 
         assertThat(vector.getValueCount(), is(5));
         for (int i = 0; i < vector.getValueCount(); i++) {
-            assertThat(vector.getObject(i), is(64L + i));
+            assertThat(vector.getObject(i), is(2.0d + i));
         }
     }
 
     @Override
-    public FieldVectorConverter createConverter(Configuration conf, Path inPath, ParquetMetadata metaData, MessageType schema,  List<ColumnDescriptor> columns) {
-        ColumnDescriptor column = columns.get(TestParquetFileGenerator.INT64_FIELD_INDEX);
-        return new Int64Converter(conf, metaData, schema, inPath, column);
+    public FieldVectorConverter createConverter(Configuration conf, Path inPath, ParquetMetadata metaData, MessageType schema, List<ColumnDescriptor> columns) {
+        ColumnDescriptor column = columns.get(TestParquetFileGenerator.DOUBLE_FIELD_INDEX);
+        return new DoubleConverter(conf, metaData, schema, inPath, column);
     }
 }

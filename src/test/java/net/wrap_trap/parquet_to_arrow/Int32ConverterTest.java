@@ -42,10 +42,9 @@ public class Int32ConverterTest extends ConverterTest {
         BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
         FieldVector vector = converter.convert(allocator);
 
-        ValueVector.Accessor accessor = vector.getAccessor();
-        assertThat(accessor.getValueCount(), is(5));
-        for (int i = 0; i < accessor.getValueCount(); i++) {
-            assertThat(accessor.getObject(i), is(32 + i));
+        assertThat(vector.getValueCount(), is(5));
+        for (int i = 0; i < vector.getValueCount(); i++) {
+            assertThat(vector.getObject(i), is(32 + i));
         }
     }
 

@@ -20,7 +20,7 @@ package net.wrap_trap.parquet_to_arrow;
 
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.FieldVector;
-import org.apache.arrow.vector.NullableBigIntVector;
+import org.apache.arrow.vector.BigIntVector;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.column.ColumnDescriptor;
@@ -30,7 +30,7 @@ import org.apache.parquet.schema.MessageType;
 
 public class Int64Converter extends AbstractFieldVectorConverter {
 
-    private NullableBigIntVector.Mutator mutator;
+    private BigIntVector vector;
 
     public Int64Converter(Configuration conf, ParquetMetadata metaData, MessageType schema, Path inPath, ColumnDescriptor column) {
         super(conf, metaData, schema, inPath, column);
@@ -38,19 +38,18 @@ public class Int64Converter extends AbstractFieldVectorConverter {
 
     @Override
     protected FieldVector createFieldVector(String name, BufferAllocator allocator) {
-        NullableBigIntVector vector = new NullableBigIntVector(name, allocator);
-        vector.allocateNew();
-        this.mutator = vector.getMutator();
-        return vector;
+        this.vector = new BigIntVector(name, allocator);
+        this.vector.allocateNew();
+        return this.vector;
     }
 
     @Override
     protected void setValue(int index, ColumnReader columnReader) {
-        this.mutator.set(index, columnReader.getLong());
+        this.vector.set(index, columnReader.getLong());
     }
 
     @Override
     protected void setValueCount(int index) {
-        this.mutator.setValueCount(index);
+        this.vector.setValueCount(index);
     }
 }

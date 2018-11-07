@@ -19,38 +19,36 @@
 package net.wrap_trap.parquet_to_arrow;
 
 import org.apache.arrow.memory.BufferAllocator;
-import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.FieldVector;
-import org.apache.arrow.vector.ValueVector;
+import org.apache.arrow.vector.Float8Vector;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.column.ColumnDescriptor;
+import org.apache.parquet.column.ColumnReader;
 import org.apache.parquet.hadoop.metadata.ParquetMetadata;
 import org.apache.parquet.schema.MessageType;
 
-import org.junit.Test;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+public class DoubleConverter extends AbstractFieldVectorConverter {
+    private Float8Vector vector;
 
-import java.io.IOException;
-import java.util.List;
-
-public class Int64ConverterTest extends ConverterTest {
-    @Test
-    public void int64ConverterTest() throws IOException {
-        FieldVectorConverter converter = build(TEST_FILE);
-        BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
-        FieldVector vector = converter.convert(allocator);
-
-        assertThat(vector.getValueCount(), is(5));
-        for (int i = 0; i < vector.getValueCount(); i++) {
-            assertThat(vector.getObject(i), is(64L + i));
-        }
+    public DoubleConverter(Configuration conf, ParquetMetadata metaData, MessageType schema, Path inPath, ColumnDescriptor column) {
+        super(conf, metaData, schema, inPath, column);
     }
 
     @Override
-    public FieldVectorConverter createConverter(Configuration conf, Path inPath, ParquetMetadata metaData, MessageType schema,  List<ColumnDescriptor> columns) {
-        ColumnDescriptor column = columns.get(TestParquetFileGenerator.INT64_FIELD_INDEX);
-        return new Int64Converter(conf, metaData, schema, inPath, column);
+    protected FieldVector createFieldVector(String name, BufferAllocator allocator) {
+        this.vector = new Float8Vector(name, allocator);
+        this.vector.allocateNew();
+        return this.vector;
+    }
+
+    @Override
+    protected void setValue(int index, ColumnReader columnReader) {
+        this.vector.set(index, columnReader.getDouble());
+    }
+
+    @Override
+    protected void setValueCount(int index) {
+        this.vector.setValueCount(index);
     }
 }
