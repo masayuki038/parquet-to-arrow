@@ -21,6 +21,13 @@
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>palantir</id>
+            <url>https://dl.bintray.com/palantir/releases</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.apache.parquet/parquet -->
         <dependency>
@@ -37,7 +44,7 @@
         <dependency>
             <groupId>org.apache.parquet</groupId>
             <artifactId>parquet-arrow</artifactId>
-            <version>1.10.0</version>
+            <version>1.10.1-palantir.3-1-g7e35007</version>
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>

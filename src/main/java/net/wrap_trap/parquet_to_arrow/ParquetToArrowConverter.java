@@ -69,6 +69,12 @@ public class ParquetToArrowConverter {
                 case BINARY:
                     fieldVectorList.add(new BinaryConverter(conf, metaData, schema, inPath, column).convert(allocator));
                     break;
+                case FLOAT:
+                    fieldVectorList.add(new FloatConverter(conf, metaData, schema, inPath, column).convert(allocator));
+                    break;
+                case DOUBLE:
+                    fieldVectorList.add(new DoubleConverter(conf, metaData, schema, inPath, column).convert(allocator));
+                    break;
                 default:
                     throw new IllegalArgumentException("Unexpected type: " + typeName);
             }
