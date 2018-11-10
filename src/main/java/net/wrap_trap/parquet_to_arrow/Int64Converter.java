@@ -19,37 +19,18 @@
 package net.wrap_trap.parquet_to_arrow;
 
 import org.apache.arrow.memory.BufferAllocator;
-import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.BigIntVector;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.parquet.column.ColumnDescriptor;
 import org.apache.parquet.column.ColumnReader;
-import org.apache.parquet.hadoop.metadata.ParquetMetadata;
-import org.apache.parquet.schema.MessageType;
 
-public class Int64Converter extends AbstractFieldVectorConverter {
+public class Int64Converter extends AbstractFieldVectorConverter<BigIntVector> {
 
-    private BigIntVector vector;
-
-    public Int64Converter(Configuration conf, ParquetMetadata metaData, MessageType schema, Path inPath, ColumnDescriptor column) {
-        super(conf, metaData, schema, inPath, column);
+    public Int64Converter(String name, BufferAllocator allocator) {
+        super(new BigIntVector(name, allocator));
     }
 
     @Override
-    protected FieldVector createFieldVector(String name, BufferAllocator allocator) {
-        this.vector = new BigIntVector(name, allocator);
-        this.vector.allocateNew();
-        return this.vector;
-    }
-
-    @Override
-    protected void setValue(int index, ColumnReader columnReader) {
-        this.vector.set(index, columnReader.getLong());
-    }
-
-    @Override
-    protected void setValueCount(int index) {
-        this.vector.setValueCount(index);
+    public void setValue(int index, ColumnReader columnReader) {
+        BigIntVector fieldVector = getFieldVector();
+        fieldVector.set(index, columnReader.getLong());
     }
 }

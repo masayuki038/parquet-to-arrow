@@ -18,11 +18,12 @@
  */
 package net.wrap_trap.parquet_to_arrow;
 
-import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.FieldVector;
-
-import java.io.IOException;
+import org.apache.parquet.column.ColumnReader;
 
 public interface FieldVectorConverter {
-    FieldVector convert(BufferAllocator allocator) throws IOException;
+
+    void append(ColumnReader columnReader);
+
+    FieldVector buildFieldVector();
 }

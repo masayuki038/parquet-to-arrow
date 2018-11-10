@@ -19,36 +19,18 @@
 package net.wrap_trap.parquet_to_arrow;
 
 import org.apache.arrow.memory.BufferAllocator;
-import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.Float8Vector;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.parquet.column.ColumnDescriptor;
 import org.apache.parquet.column.ColumnReader;
-import org.apache.parquet.hadoop.metadata.ParquetMetadata;
-import org.apache.parquet.schema.MessageType;
 
-public class DoubleConverter extends AbstractFieldVectorConverter {
-    private Float8Vector vector;
+public class DoubleConverter extends AbstractFieldVectorConverter<Float8Vector> {
 
-    public DoubleConverter(Configuration conf, ParquetMetadata metaData, MessageType schema, Path inPath, ColumnDescriptor column) {
-        super(conf, metaData, schema, inPath, column);
+    public DoubleConverter(String name, BufferAllocator allocator) {
+        super(new Float8Vector(name, allocator));
     }
 
     @Override
-    protected FieldVector createFieldVector(String name, BufferAllocator allocator) {
-        this.vector = new Float8Vector(name, allocator);
-        this.vector.allocateNew();
-        return this.vector;
-    }
-
-    @Override
-    protected void setValue(int index, ColumnReader columnReader) {
-        this.vector.set(index, columnReader.getDouble());
-    }
-
-    @Override
-    protected void setValueCount(int index) {
-        this.vector.setValueCount(index);
+    public void setValue(int index, ColumnReader columnReader) {
+        Float8Vector fieldVector = getFieldVector();
+        fieldVector.set(index, columnReader.getDouble());
     }
 }

@@ -1,1 +1,0 @@
-- Add "-Dhadoop.home.dir=(Your ${HADOOP_HOME} Path)" to VM parameters

@@ -19,36 +19,18 @@
 package net.wrap_trap.parquet_to_arrow;
 
 import org.apache.arrow.memory.BufferAllocator;
-import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.Float4Vector;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.parquet.column.ColumnDescriptor;
 import org.apache.parquet.column.ColumnReader;
-import org.apache.parquet.hadoop.metadata.ParquetMetadata;
-import org.apache.parquet.schema.MessageType;
 
-public class FloatConverter extends AbstractFieldVectorConverter {
-    private Float4Vector vector;
+public class FloatConverter extends AbstractFieldVectorConverter<Float4Vector> {
 
-    public FloatConverter(Configuration conf, ParquetMetadata metaData, MessageType schema, Path inPath, ColumnDescriptor column) {
-        super(conf, metaData, schema, inPath, column);
+    public FloatConverter(String name, BufferAllocator allocator) {
+        super(new Float4Vector(name, allocator));
     }
 
     @Override
-    protected FieldVector createFieldVector(String name, BufferAllocator allocator) {
-        this.vector = new Float4Vector(name, allocator);
-        this.vector.allocateNew();
-        return this.vector;
-    }
-
-    @Override
-    protected void setValue(int index, ColumnReader columnReader) {
-        this.vector.set(index, columnReader.getFloat());
-    }
-
-    @Override
-    protected void setValueCount(int index) {
-        this.vector.setValueCount(index);
+    public void setValue(int index, ColumnReader columnReader) {
+        Float4Vector fieldVector = getFieldVector();
+        fieldVector.set(index, columnReader.getFloat());
     }
 }

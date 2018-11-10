@@ -19,37 +19,18 @@
 package net.wrap_trap.parquet_to_arrow;
 
 import org.apache.arrow.memory.BufferAllocator;
-import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.util.Text;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.parquet.column.ColumnDescriptor;
 import org.apache.parquet.column.ColumnReader;
-import org.apache.parquet.hadoop.metadata.ParquetMetadata;
-import org.apache.parquet.schema.MessageType;
 
-public class BinaryConverter extends AbstractFieldVectorConverter {
-    private VarCharVector vector;
+public class BinaryConverter extends AbstractFieldVectorConverter<VarCharVector> {
 
-    public BinaryConverter(Configuration conf, ParquetMetadata metaData, MessageType schema, Path inPath, ColumnDescriptor column) {
-        super(conf, metaData, schema, inPath, column);
+    public BinaryConverter(String name, BufferAllocator allocator) {
+        super(new VarCharVector(name, allocator));
     }
 
-    @Override
-    protected FieldVector createFieldVector(String name, BufferAllocator allocator) {
-        this.vector = new VarCharVector(name, allocator);
-        this.vector.allocateNew();
-        return vector;
-    }
-
-    @Override
-    protected void setValue(int index, ColumnReader columnReader) {
-        this.vector.set(index, new Text(columnReader.getBinary().getBytes()));
-    }
-
-    @Override
-    protected void setValueCount(int index) {
-        this.vector.setValueCount(index);
+    public void setValue(int index, ColumnReader columnReader) {
+        VarCharVector vector = getFieldVector();
+        vector.set(index, new Text(columnReader.getBinary().getBytes()));
     }
 }

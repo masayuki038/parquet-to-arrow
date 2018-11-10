@@ -20,10 +20,11 @@ package net.wrap_trap.parquet_to_arrow;
 
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
-import org.apache.arrow.vector.IntVector;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.column.ColumnDescriptor;
+import org.apache.parquet.column.impl.ColumnReadStoreImpl;
+import org.apache.parquet.column.page.PageReadStore;
 import org.apache.parquet.hadoop.ParquetFileReader;
 import org.apache.parquet.arrow.schema.SchemaConverter;
 import org.apache.parquet.arrow.schema.SchemaMapping;
@@ -47,40 +48,50 @@ public class ParquetToArrowConverter {
         ParquetMetadata metaData = ParquetFileReader.readFooter(conf, inPath);
         MessageType schema = metaData.getFileMetaData().getSchema();
 
-        return convertToArrow(conf, metaData, schema, inPath);
-    }
-
-    protected VectorSchemaRoot convertToArrow(Configuration conf, ParquetMetadata metaData, MessageType schema, Path inPath) throws IOException {
-        List<ColumnDescriptor> columns = schema.getColumns();
-
         BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
         List<FieldVector> fieldVectorList = new ArrayList<>();
 
-        for (ColumnDescriptor column : columns) {
-            // create ValueVector
-            PrimitiveType.PrimitiveTypeName typeName = column.getType();
-            switch (typeName) {
-                case INT32:
-                    fieldVectorList.add(new Int32Converter(conf, metaData, schema, inPath, column).convert(allocator));
-                    break;
-                case INT64:
-                    fieldVectorList.add(new Int64Converter(conf, metaData, schema, inPath, column).convert(allocator));
-                    break;
-                case BINARY:
-                    fieldVectorList.add(new BinaryConverter(conf, metaData, schema, inPath, column).convert(allocator));
-                    break;
-                case FLOAT:
-                    fieldVectorList.add(new FloatConverter(conf, metaData, schema, inPath, column).convert(allocator));
-                    break;
-                case DOUBLE:
-                    fieldVectorList.add(new DoubleConverter(conf, metaData, schema, inPath, column).convert(allocator));
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unexpected type: " + typeName);
-            }
+        for (ColumnDescriptor column : schema.getColumns()) {
+            fieldVectorList.add(convert(conf, metaData, schema, inPath, column, allocator));
         }
 
         SchemaMapping schemaMapping = new SchemaConverter().fromParquet(schema);
         return new VectorSchemaRoot(schemaMapping.getArrowSchema(), fieldVectorList, fieldVectorList.get(0).getValueCount());
+    }
+
+    protected FieldVectorConverter createFieldVectorConverter(ColumnDescriptor column, BufferAllocator allocator) {
+        PrimitiveType.PrimitiveTypeName typeName = column.getType();
+        switch (typeName) {
+            case INT32:
+                return new Int32Converter(column.getPath()[0], allocator);
+            case INT64:
+                return new Int64Converter(column.getPath()[0], allocator);
+            case BINARY:
+                return new BinaryConverter(column.getPath()[0], allocator);
+            case FLOAT:
+                return new FloatConverter(column.getPath()[0], allocator);
+            case DOUBLE:
+                return new DoubleConverter(column.getPath()[0], allocator);
+            default:
+                throw new UnsupportedOperationException("Unsupported Type: " + typeName);
+        }
+    }
+
+    protected FieldVector convert(Configuration conf, ParquetMetadata metaData, MessageType schema, Path inPath, ColumnDescriptor column, BufferAllocator allocator) throws IOException {
+        FieldVectorConverter converter = createFieldVectorConverter(column, allocator);
+
+        try(ParquetFileReader reader =  new ParquetFileReader(conf, inPath, metaData.getBlocks(), schema.getColumns())) {
+            PageReadStore store = reader.readNextRowGroup();
+            while (store != null) {
+                ColumnReadStoreImpl columnReadStoreImpl = new ColumnReadStoreImpl(store, new ParquetGroupConverter(), schema, "");
+                int maxDefinitionLevel = column.getMaxDefinitionLevel();
+                if (maxDefinitionLevel > 0) {
+                    throw new UnsupportedOperationException("Only support definition level == 0");
+                }
+                converter.append(columnReadStoreImpl.getColumnReader(column));
+                store = reader.readNextRowGroup();
+            }
+            return converter.buildFieldVector();
+        }
     }
 }
