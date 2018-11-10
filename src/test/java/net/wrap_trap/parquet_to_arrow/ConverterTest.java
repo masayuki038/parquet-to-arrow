@@ -18,19 +18,12 @@
  */
 package net.wrap_trap.parquet_to_arrow;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.parquet.column.ColumnDescriptor;
-import org.apache.parquet.hadoop.ParquetFileReader;
-import org.apache.parquet.hadoop.metadata.ParquetMetadata;
-import org.apache.parquet.schema.MessageType;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.List;
+
 
 public abstract class ConverterTest {
 
@@ -45,17 +38,5 @@ public abstract class ConverterTest {
     @AfterClass
     public static void tearDown() {
         TestParquetFileGenerator.clear(TEST_FILE);
-    }
-
-    public FieldVectorConverter build(String parquetFilePath) throws IOException {
-        Configuration conf = new Configuration();
-        Path inPath = new Path(parquetFilePath);
-        ParquetMetadata metaData = ParquetFileReader.readFooter(conf, inPath);
-        MessageType schema = metaData.getFileMetaData().getSchema();
-        return createConverter(conf, inPath, metaData, schema, schema.getColumns());
-    }
-
-    public FieldVectorConverter createConverter(Configuration conf, Path inPath, ParquetMetadata metaData, MessageType schema,  List<ColumnDescriptor> columns) {
-        throw new NotImplementedException();
     }
 }
