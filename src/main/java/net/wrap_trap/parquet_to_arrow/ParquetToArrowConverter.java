@@ -39,8 +39,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Provide API converting Parquet to Arrow.
+ */
 public class ParquetToArrowConverter {
 
+    /**
+     * The API converting Parquet to Arrow.
+     * @param parquetFilePath Parquet file path
+     * @return VectorSchemaRoot of Apache Arrow
+     * @throws IOException
+     */
     public VectorSchemaRoot convertToArrow(String parquetFilePath) throws IOException {
         Configuration conf = new Configuration();
         Path inPath = new Path(parquetFilePath);

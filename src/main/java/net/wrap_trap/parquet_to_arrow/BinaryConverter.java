@@ -23,13 +23,19 @@ import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.util.Text;
 import org.apache.parquet.column.ColumnReader;
 
+/**
+ * Converter converting Binary values in Parquet to Arrow.
+ */
 public class BinaryConverter extends AbstractFieldVectorConverter<VarCharVector> {
 
     public BinaryConverter(String name, BufferAllocator allocator) {
         super(new VarCharVector(name, allocator));
     }
 
-    public void setValue(int index, ColumnReader columnReader) {
+    /**
+     * {@inheritDoc}
+     */
+    public void setValues(int index, ColumnReader columnReader) {
         VarCharVector vector = getFieldVector();
         vector.set(index, new Text(columnReader.getBinary().getBytes()));
     }

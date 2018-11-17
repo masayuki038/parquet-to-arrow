@@ -22,14 +22,20 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.Float8Vector;
 import org.apache.parquet.column.ColumnReader;
 
+/**
+ * Converter converting Double values in Parquet to Arrow.
+ */
 public class DoubleConverter extends AbstractFieldVectorConverter<Float8Vector> {
 
     public DoubleConverter(String name, BufferAllocator allocator) {
         super(new Float8Vector(name, allocator));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void setValue(int index, ColumnReader columnReader) {
+    public void setValues(int index, ColumnReader columnReader) {
         Float8Vector fieldVector = getFieldVector();
         fieldVector.set(index, columnReader.getDouble());
     }

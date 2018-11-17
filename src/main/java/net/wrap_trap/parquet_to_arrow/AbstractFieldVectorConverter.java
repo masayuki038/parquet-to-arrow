@@ -21,9 +21,19 @@ package net.wrap_trap.parquet_to_arrow;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.parquet.column.ColumnReader;
 
+/**
+ * Provide a common function of FieldVectorConverter.
+ * @param <F> The type of FieldVector that convert from Parquet
+ */
 public abstract class AbstractFieldVectorConverter<F extends FieldVector> implements FieldVectorConverter {
 
+    /**
+     * The instance of FieldVector that convert from Parquet.
+     */
     private F fieldVector;
+    /**
+     * ColumnarReader index.
+     */
     private int index = 0;
 
     public AbstractFieldVectorConverter(F fieldVector) {
@@ -31,15 +41,23 @@ public abstract class AbstractFieldVectorConverter<F extends FieldVector> implem
         this.fieldVector = fieldVector;
     }
 
+    /**
+     * Add the values of ColumnReader into FieldVector.
+     * @param columnReader ColumnarReader to add FieldVectorConverter
+     */
     @Override
     public void append(ColumnReader columnReader) {
         long e = columnReader.getTotalValueCount();
         for (long i = 0L; i < e; i++) {
-            setValue(index++, columnReader);
+            setValues(index++, columnReader);
             columnReader.consume();
         }
     }
 
+    /**
+     * Build FieldVector.
+     * @return FieldVector containing values retrieved from Parquet
+     */
     @Override
     public FieldVector buildFieldVector() {
         this.fieldVector.setValueCount(this.index);
@@ -50,5 +68,10 @@ public abstract class AbstractFieldVectorConverter<F extends FieldVector> implem
         return this.fieldVector;
     }
 
-    abstract protected void setValue(int index, ColumnReader columnReader);
+    /**
+     * Set the values retrieved from Parquet to FieldVector
+     * @param index
+     * @param columnReader
+     */
+    abstract protected void setValues(int index, ColumnReader columnReader);
 }

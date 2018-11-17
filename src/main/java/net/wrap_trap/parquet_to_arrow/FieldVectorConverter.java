@@ -21,6 +21,9 @@ package net.wrap_trap.parquet_to_arrow;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.parquet.column.ColumnReader;
 
+/**
+ * The interface converting from Parquet to Arrow.
+ */
 public interface FieldVectorConverter {
 
     void append(ColumnReader columnReader);

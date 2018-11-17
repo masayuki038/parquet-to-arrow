@@ -22,14 +22,20 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.IntVector;
 import org.apache.parquet.column.ColumnReader;
 
+/**
+ * Converter converting Int32 values in Parquet to Arrow.
+ */
 public class Int32Converter extends AbstractFieldVectorConverter<IntVector> {
 
     public Int32Converter(String name, BufferAllocator allocator) {
         super(new IntVector(name, allocator));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void setValue(int index, ColumnReader columnReader) {
+    public void setValues(int index, ColumnReader columnReader) {
         IntVector fieldVector = getFieldVector();
         fieldVector.set(index, columnReader.getInteger());
     }

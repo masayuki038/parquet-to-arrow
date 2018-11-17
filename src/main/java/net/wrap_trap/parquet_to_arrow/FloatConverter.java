@@ -22,14 +22,20 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.Float4Vector;
 import org.apache.parquet.column.ColumnReader;
 
+/**
+ * Converter converting Float values in Parquet to Arrow.
+ */
 public class FloatConverter extends AbstractFieldVectorConverter<Float4Vector> {
 
     public FloatConverter(String name, BufferAllocator allocator) {
         super(new Float4Vector(name, allocator));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void setValue(int index, ColumnReader columnReader) {
+    public void setValues(int index, ColumnReader columnReader) {
         Float4Vector fieldVector = getFieldVector();
         fieldVector.set(index, columnReader.getFloat());
     }

@@ -22,14 +22,20 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.BigIntVector;
 import org.apache.parquet.column.ColumnReader;
 
+/**
+ * Converter converting Int64 values in Parquet to Arrow.
+ */
 public class Int64Converter extends AbstractFieldVectorConverter<BigIntVector> {
 
     public Int64Converter(String name, BufferAllocator allocator) {
         super(new BigIntVector(name, allocator));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void setValue(int index, ColumnReader columnReader) {
+    public void setValues(int index, ColumnReader columnReader) {
         BigIntVector fieldVector = getFieldVector();
         fieldVector.set(index, columnReader.getLong());
     }
