@@ -7,6 +7,75 @@
     <groupId>net.wrap-trap</groupId>
     <artifactId>parquet-to-arrow</artifactId>
     <version>0.1.0</version>
+    <packaging>jar</packaging>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <url>https://github.com/masayuki038/parquet-to-arrow</url>
+        <connection>scm:git:git@github.com:masayuki038/parquet-to-arrow.git</connection>
+        <developerConnection>scm:git:git@github.com:masayuki038/parquet-to-arrow.git</developerConnection>
+    </scm>
+    <url>https://github.com/masayuki038/parquet-to-arrow</url>
+    <description>parquet-to-arrow is a Java library that convert from Parquet files to Apache Arrow</description>
+
+    <developers>
+        <developer>
+            <id>masayuki038</id>
+            <name>Masayuki Takahashi</name>
+            <email>masayuki038@gmail.com</email>
+            <url>https://masayuki038.github.io</url>
+        </developer>
+    </developers>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <profiles>
+        <profile>
+            <id>release-sign-artifacts</id>
+            <!-- for release -->
+            <!-- mvn -DperformRelease=true deploy -->
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- generate PGP Signature -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
