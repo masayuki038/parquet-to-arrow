@@ -31,7 +31,6 @@ public abstract class ConverterTest {
 
     @BeforeClass
     public static void setUp() throws IOException, ParseException {
-        //System.setProperty("hadoop.home.dir", "d:/development/hadoop");
         TestParquetFileGenerator.generateParquetFile(TEST_FILE);
     }
 
