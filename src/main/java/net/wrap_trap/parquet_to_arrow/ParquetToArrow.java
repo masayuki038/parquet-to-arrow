@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * Provide API converting Parquet to Arrow.
  */
-public class ParquetToArrowConverter {
+public class ParquetToArrow {
 
     /**
      * The API converting Parquet to Arrow.
@@ -50,7 +50,7 @@ public class ParquetToArrowConverter {
      * @return VectorSchemaRoot of Apache Arrow
      * @throws IOException
      */
-    public VectorSchemaRoot convertToArrow(String parquetFilePath) throws IOException {
+    public VectorSchemaRoot convert(String parquetFilePath) throws IOException {
         Configuration conf = new Configuration();
         Path inPath = new Path(parquetFilePath);
 

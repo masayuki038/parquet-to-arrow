@@ -32,14 +32,13 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ParquetToArrowConverterTest extends ConverterTest {
+public class ParquetToArrowTest extends ConverterTest {
 
     private VectorSchemaRoot result;
 
     @Before
     public void before() throws IOException {
-        ParquetToArrowConverter converter = new ParquetToArrowConverter();
-        this.result = converter.convertToArrow(TEST_FILE);
+        this.result = new ParquetToArrow().convert(TEST_FILE);
     }
 
     @Test
