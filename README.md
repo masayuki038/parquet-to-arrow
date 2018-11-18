@@ -13,3 +13,8 @@ Required Properties
 -------------------
 
 - `HADOOP_HOME` or `hadoop_home_dir`
+
+Maven
+-----
+
+https://mvnrepository.com/artifact/net.wrap-trap/parquet-to-arrow
