@@ -58,7 +58,7 @@ public class TestParquetFileGenerator {
                 + "required float float_field; "
                 + "required double double_field; "
                 + "required binary binary_field; "
-                + "required int64 timestamp_field (TIMESTAMP_MILLIS);"
+                + "optional int64 timestamp_field (TIMESTAMP_MILLIS);"
                 + "} ");
         GroupWriteSupport.setSchema(schema, conf);
         SimpleGroupFactory fact = new SimpleGroupFactory(schema);
