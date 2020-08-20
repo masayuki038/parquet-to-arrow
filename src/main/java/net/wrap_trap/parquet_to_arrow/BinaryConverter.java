@@ -37,6 +37,10 @@ public class BinaryConverter extends AbstractFieldVectorConverter<VarCharVector>
      */
     public void setValues(int index, ColumnReader columnReader) {
         VarCharVector vector = getFieldVector();
-        vector.set(index, new Text(columnReader.getBinary().getBytes()));
+        if (columnReader.getCurrentDefinitionLevel() > 0) {
+            vector.setSafe(index, new Text(columnReader.getBinary().getBytes()));
+        } else {
+            vector.setNull(index);
+        }
     }
 }

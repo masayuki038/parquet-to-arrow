@@ -37,6 +37,10 @@ public class DoubleConverter extends AbstractFieldVectorConverter<Float8Vector> 
     @Override
     public void setValues(int index, ColumnReader columnReader) {
         Float8Vector fieldVector = getFieldVector();
-        fieldVector.set(index, columnReader.getDouble());
+        if (columnReader.getCurrentDefinitionLevel() > 0) {
+            fieldVector.setSafe(index, columnReader.getDouble());
+        } else {
+            fieldVector.setNull(index);
+        }
     }
 }

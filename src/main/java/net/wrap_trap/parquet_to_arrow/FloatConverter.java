@@ -37,6 +37,10 @@ public class FloatConverter extends AbstractFieldVectorConverter<Float4Vector> {
     @Override
     public void setValues(int index, ColumnReader columnReader) {
         Float4Vector fieldVector = getFieldVector();
-        fieldVector.set(index, columnReader.getFloat());
+        if (columnReader.getCurrentDefinitionLevel() > 0) {
+            fieldVector.setSafe(index, columnReader.getFloat());
+        } else {
+            fieldVector.setNull(index);
+        }
     }
 }

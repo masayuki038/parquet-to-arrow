@@ -94,8 +94,8 @@ public class ParquetToArrow {
             while (store != null) {
                 ColumnReadStoreImpl columnReadStoreImpl = new ColumnReadStoreImpl(store, new ParquetGroupConverter(), schema, "");
                 int maxDefinitionLevel = column.getMaxDefinitionLevel();
-                if (maxDefinitionLevel > 0) {
-                    throw new UnsupportedOperationException("Only support definition level == 0");
+                if (maxDefinitionLevel > 1) {
+                    throw new UnsupportedOperationException("Only support definition level: 0 or 1 ");
                 }
                 converter.append(columnReadStoreImpl.getColumnReader(column));
                 store = reader.readNextRowGroup();

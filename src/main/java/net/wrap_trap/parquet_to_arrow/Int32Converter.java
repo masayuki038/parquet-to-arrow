@@ -37,6 +37,10 @@ public class Int32Converter extends AbstractFieldVectorConverter<IntVector> {
     @Override
     public void setValues(int index, ColumnReader columnReader) {
         IntVector fieldVector = getFieldVector();
-        fieldVector.set(index, columnReader.getInteger());
+        if (columnReader.getCurrentDefinitionLevel() > 0) {
+            fieldVector.setSafe(index, columnReader.getInteger());
+        } else {
+            fieldVector.setNull(index);
+        }
     }
 }

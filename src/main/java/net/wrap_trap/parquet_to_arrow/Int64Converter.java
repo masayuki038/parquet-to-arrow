@@ -37,6 +37,10 @@ public class Int64Converter extends AbstractFieldVectorConverter<BigIntVector> {
     @Override
     public void setValues(int index, ColumnReader columnReader) {
         BigIntVector fieldVector = getFieldVector();
-        fieldVector.set(index, columnReader.getLong());
+        if (columnReader.getCurrentDefinitionLevel() > 0) {
+            fieldVector.setSafe(index, columnReader.getLong());
+        } else {
+            fieldVector.setNull(index);
+        }
     }
 }

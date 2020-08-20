@@ -62,25 +62,25 @@ public class TestParquetFileGenerator {
                 + "} ");
         GroupWriteSupport.setSchema(schema, conf);
         SimpleGroupFactory fact = new SimpleGroupFactory(schema);
-        Path fsPpath = new Path(f.getPath());
-        ParquetWriter<Group> writer = new ParquetWriter<Group>(fsPpath
+        Path fsPath = new Path(f.getPath());
+        ParquetWriter<Group> writer = new ParquetWriter<Group>(fsPath
             , new GroupWriteSupport()
             , CompressionCodecName.UNCOMPRESSED
+            , 1024 * 12
             , 1024
-            , 1024
-            , 512
+            , 256
             , true
             , false
             , ParquetProperties.WriterVersion.PARQUET_2_0
             , conf);
         try {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 1024 * 1024; i++) {
                 writer.write(fact.newGroup()
                     .append("int32_field", 32 + i)
                     .append("int64_field", 64L + i)
                     .append("float_field", 1.0f + i)
                     .append("double_field", 2.0d + i)
-                    .append("binary_field", Binary.fromString("foobar" + i))
+                    .append("binary_field", Binary.fromString("abcdefghijklmnopqrstuvwxyz" + i))
                     .append("timestamp_field", date.getTime() + (i * 1000)));
             }
         } finally {
