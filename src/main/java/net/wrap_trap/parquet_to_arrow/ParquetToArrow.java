@@ -20,6 +20,9 @@ package net.wrap_trap.parquet_to_arrow;
 
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.vector.types.pojo.Field;
+import org.apache.arrow.vector.FieldVector;
+import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.column.ColumnDescriptor;
@@ -31,9 +34,6 @@ import org.apache.parquet.arrow.schema.SchemaMapping;
 import org.apache.parquet.hadoop.metadata.ParquetMetadata;
 import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.PrimitiveType;
-
-import org.apache.arrow.vector.FieldVector;
-import org.apache.arrow.vector.VectorSchemaRoot;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -68,19 +68,42 @@ public class ParquetToArrow {
         return new VectorSchemaRoot(schemaMapping.getArrowSchema(), fieldVectorList, fieldVectorList.get(0).getValueCount());
     }
 
+    public VectorSchemaRoot[] convertByColumnar(String parquetFilePath) throws IOException {
+        Configuration conf = new Configuration();
+        Path inPath = new Path(parquetFilePath);
+
+        ParquetMetadata metaData = ParquetFileReader.readFooter(conf, inPath);
+        MessageType schema = metaData.getFileMetaData().getSchema();
+
+        BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
+        List<VectorSchemaRoot> rootList = new ArrayList<>();
+
+        for (ColumnDescriptor column : schema.getColumns()) {
+            List<FieldVector> fieldVectors = new ArrayList();
+            List<Field> fields = new ArrayList<>();
+            FieldVector fieldVector = convert(conf, metaData, schema, inPath, column, allocator);
+            fields.add(fieldVector.getField());
+            fieldVectors.add(fieldVector);
+            rootList.add(new VectorSchemaRoot(fields, fieldVectors, fieldVector.getValueCount()));
+        }
+        VectorSchemaRoot[] ret = new VectorSchemaRoot[rootList.size()];
+        rootList.toArray(ret);
+        return ret;
+    }
+
     protected FieldVectorConverter createFieldVectorConverter(ColumnDescriptor column, BufferAllocator allocator) {
         PrimitiveType.PrimitiveTypeName typeName = column.getType();
         switch (typeName) {
             case INT32:
-                return new Int32Converter(column.getPath()[0], allocator);
+                return new Int32Converter(column.getPath()[0], column.getMaxDefinitionLevel(), allocator);
             case INT64:
-                return new Int64Converter(column.getPath()[0], allocator);
+                return new Int64Converter(column.getPath()[0], column.getMaxDefinitionLevel(), allocator);
             case BINARY:
-                return new BinaryConverter(column.getPath()[0], allocator);
+                return new BinaryConverter(column.getPath()[0], column.getMaxDefinitionLevel(), allocator);
             case FLOAT:
-                return new FloatConverter(column.getPath()[0], allocator);
+                return new FloatConverter(column.getPath()[0], column.getMaxDefinitionLevel(), allocator);
             case DOUBLE:
-                return new DoubleConverter(column.getPath()[0], allocator);
+                return new DoubleConverter(column.getPath()[0], column.getMaxDefinitionLevel(), allocator);
             default:
                 throw new UnsupportedOperationException("Unsupported Type: " + typeName);
         }

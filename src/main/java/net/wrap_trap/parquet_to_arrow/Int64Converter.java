@@ -27,8 +27,8 @@ import org.apache.parquet.column.ColumnReader;
  */
 public class Int64Converter extends AbstractFieldVectorConverter<BigIntVector> {
 
-    public Int64Converter(String name, BufferAllocator allocator) {
-        super(new BigIntVector(name, allocator));
+    public Int64Converter(String name, int maxDefinitionLevel, BufferAllocator allocator) {
+        super(new BigIntVector(name, allocator), maxDefinitionLevel);
     }
 
     /**
@@ -37,6 +37,10 @@ public class Int64Converter extends AbstractFieldVectorConverter<BigIntVector> {
     @Override
     public void setValues(int index, ColumnReader columnReader) {
         BigIntVector fieldVector = getFieldVector();
-        fieldVector.set(index, columnReader.getLong());
+        if (columnReader.getCurrentDefinitionLevel() < getMaxDefinitionLevel()) {
+            fieldVector.setNull(index);
+        } else {
+            fieldVector.setSafe(index, columnReader.getLong());
+        }
     }
 }

@@ -28,8 +28,8 @@ import org.apache.parquet.column.ColumnReader;
  */
 public class BinaryConverter extends AbstractFieldVectorConverter<VarCharVector> {
 
-    public BinaryConverter(String name, BufferAllocator allocator) {
-        super(new VarCharVector(name, allocator));
+    public BinaryConverter(String name, int maxDefinitionLevel, BufferAllocator allocator) {
+        super(new VarCharVector(name, allocator), maxDefinitionLevel);
     }
 
     /**
@@ -37,6 +37,10 @@ public class BinaryConverter extends AbstractFieldVectorConverter<VarCharVector>
      */
     public void setValues(int index, ColumnReader columnReader) {
         VarCharVector vector = getFieldVector();
-        vector.set(index, new Text(columnReader.getBinary().getBytes()));
+        if (columnReader.getCurrentDefinitionLevel() < getMaxDefinitionLevel()) {
+            vector.setNull(index);
+        } else {
+            vector.setSafe(index, new Text(columnReader.getBinary().getBytes()));
+        }
     }
 }

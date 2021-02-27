@@ -39,6 +39,7 @@ public class ParquetToArrowTest extends ConverterTest {
     @Before
     public void before() throws IOException {
         this.result = new ParquetToArrow().convert(TEST_FILE);
+        this.result.getSchema().toJson();
     }
 
     @Test

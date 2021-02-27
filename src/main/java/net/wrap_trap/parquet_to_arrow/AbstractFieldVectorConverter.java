@@ -36,9 +36,15 @@ public abstract class AbstractFieldVectorConverter<F extends FieldVector> implem
      */
     private int index = 0;
 
-    public AbstractFieldVectorConverter(F fieldVector) {
+    /**
+     * max definition level of parquet column
+     */
+    private int maxDefinitionLevel;
+
+    public AbstractFieldVectorConverter(F fieldVector, int maxDefinitionLevel) {
         fieldVector.allocateNew();
         this.fieldVector = fieldVector;
+        this.maxDefinitionLevel = maxDefinitionLevel;
     }
 
     /**
@@ -66,6 +72,10 @@ public abstract class AbstractFieldVectorConverter<F extends FieldVector> implem
 
     protected F getFieldVector() {
         return this.fieldVector;
+    }
+
+    protected int getMaxDefinitionLevel() {
+        return this.maxDefinitionLevel;
     }
 
     /**

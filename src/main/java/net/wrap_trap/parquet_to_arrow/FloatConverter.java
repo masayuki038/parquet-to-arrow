@@ -27,8 +27,8 @@ import org.apache.parquet.column.ColumnReader;
  */
 public class FloatConverter extends AbstractFieldVectorConverter<Float4Vector> {
 
-    public FloatConverter(String name, BufferAllocator allocator) {
-        super(new Float4Vector(name, allocator));
+    public FloatConverter(String name, int maxDefinitionLevel, BufferAllocator allocator) {
+        super(new Float4Vector(name, allocator), maxDefinitionLevel);
     }
 
     /**
@@ -37,6 +37,10 @@ public class FloatConverter extends AbstractFieldVectorConverter<Float4Vector> {
     @Override
     public void setValues(int index, ColumnReader columnReader) {
         Float4Vector fieldVector = getFieldVector();
-        fieldVector.set(index, columnReader.getFloat());
+        if (columnReader.getCurrentDefinitionLevel() < getMaxDefinitionLevel()) {
+            fieldVector.setNull(index);
+        } else {
+            fieldVector.setSafe(index, columnReader.getFloat());
+        }
     }
 }
